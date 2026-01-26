@@ -59,13 +59,13 @@
                   <HelpTip text="选择用于自动注册的邮箱服务提供商" />
                 </div>
                 <SelectMenu
-                  v-model="localSettings.basic.mail_service"
+                  v-model="localSettings.basic.temp_mail_provider"
                   :options="mailServiceOptions"
                   class="w-full"
                 />
                 
                 <!-- DuckMail 配置 -->
-                <template v-if="localSettings.basic.mail_service === 'duckmail'">
+                <template v-if="localSettings.basic.temp_mail_provider === 'duckmail'">
                   <label class="block text-xs text-muted-foreground">DuckMail API</label>
                   <input
                     v-model="localSettings.basic.duckmail_base_url"
@@ -85,8 +85,33 @@
                   </Checkbox>
                 </template>
                 
+                <!-- Moemail 配置 -->
+                <template v-if="localSettings.basic.temp_mail_provider === 'moemail'">
+                  <label class="block text-xs text-muted-foreground">Moemail API</label>
+                  <input
+                    v-model="localSettings.basic.moemail_base_url"
+                    type="text"
+                    class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="https://moemail.app"
+                  />
+                  <label class="block text-xs text-muted-foreground">Moemail API 密钥</label>
+                  <input
+                    v-model="localSettings.basic.moemail_api_key"
+                    type="text"
+                    class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="X-API-Key"
+                  />
+                  <label class="block text-xs text-muted-foreground">Moemail 域名（可选，留空随机）</label>
+                  <input
+                    v-model="localSettings.basic.moemail_domain"
+                    type="text"
+                    class="w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="moemail.app"
+                  />
+                </template>
+
                 <!-- Freemail 配置 -->
-                <template v-if="localSettings.basic.mail_service === 'freemail'">
+                <template v-if="localSettings.basic.temp_mail_provider === 'freemail'">
                   <label class="block text-xs text-muted-foreground">Freemail API 地址</label>
                   <input
                     v-model="localSettings.basic.freemail_base_url"
@@ -292,6 +317,7 @@ const browserEngineOptions = [
 ]
 const mailServiceOptions = [
   { label: 'DuckMail（默认）', value: 'duckmail' },
+  { label: 'Moemail', value: 'moemail' },
   { label: 'Freemail（自建服务）', value: 'freemail' },
 ]
 const imageOutputOptions = [
@@ -332,8 +358,8 @@ watch(settings, (value) => {
   next.image_generation.output_format ||= 'base64'
   next.basic = next.basic || {}
   // 只在未设置时才使用默认值，保留已保存的配置
-  if (!next.basic.mail_service) {
-    next.basic.mail_service = 'duckmail'
+  if (!next.basic.temp_mail_provider) {
+    next.basic.temp_mail_provider = 'duckmail'
   }
   next.basic.duckmail_base_url ||= 'https://api.duckmail.sbs'
   next.basic.duckmail_verify_ssl = next.basic.duckmail_verify_ssl ?? true
